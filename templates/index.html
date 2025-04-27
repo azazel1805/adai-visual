@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Text Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Image Text Translator</h1>
+
+    <div class="container">
+        <div class="upload-section">
+            <label for="imageInput" class="file-label">Choose or Capture Image</label>
+            <input type="file" id="imageInput" accept="image/*"> <!-- 'capture' attribute removed for broader compatibility -->
+
+            <label for="languageSelect">Translate to:</label>
+            <select id="languageSelect">
+                <option value="turkish">Turkish</option>
+                <option value="spanish">Spanish</option>
+                <option value="german">German</option>
+                <option value="french">French</option>
+                <option value="english">English</option>
+            </select>
+
+            <button id="analyzeButton">Analyze & Translate</button>
+        </div>
+
+        <div id="loading" style="display: none;">
+            <p>Processing image...</p>
+            <div class="spinner"></div>
+        </div>
+
+        <div id="previewArea" style="display: none;">
+             <h2>Preview</h2>
+             <img id="imagePreview" src="#" alt="Image Preview" />
+        </div>
+
+        <div id="resultsArea" style="display: none;">
+            <h2>Results</h2>
+            <div class="result-box">
+                <h3>Extracted Text:</h3>
+                <pre id="extractedText"></pre>
+            </div>
+            <div class="result-box">
+                <h3 id="translationLabel">Translated Text:</h3>
+                <pre id="translatedText"></pre>
+            </div>
+        </div>
+
+        <div id="errorArea" style="display: none;" class="error-message">
+            <h3>Error</h3>
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
