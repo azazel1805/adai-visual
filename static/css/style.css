@@ -61,13 +61,16 @@ h2 {
     margin-bottom: 1em;
     font-weight: 500;
 }
+h2 i { margin-right: 8px; opacity: 0.8; } /* Style heading icons */
 
 h3 {
     color: #34495e; /* Slightly lighter blue-gray */
-    font-size: 1.2em;
-    margin-bottom: 0.7em;
+    font-size: 1.15em; /* Slightly smaller h3 */
+    margin: 0; /* Remove default margin - handled by parent flex */
     font-weight: 500;
 }
+h3 i { margin-right: 6px; opacity: 0.8; } /* Style heading icons */
+
 
 /* --- Input Options & Buttons --- */
 .input-options {
@@ -90,20 +93,29 @@ h3 {
 
 /* Base button style */
 button, .file-label {
-    padding: 12px 22px;
+    padding: 10px 18px; /* Default padding */
     border: none; /* Remove borders by default */
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 500;
-    transition: all 0.3s ease; /* Smooth transition for all properties */
+    transition: all 0.25s ease; /* Smooth transition */
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    display: inline-flex; /* Align icon and text */
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between icon and text */
+    vertical-align: middle; /* Align with text like span */
+}
+button i, .file-label i { /* Don't let icon add pointer events */
+    pointer-events: none;
+    opacity: 0.9;
 }
 
 /* File Upload Label Button */
 .file-label {
-    display: inline-block; /* Needed for padding/margin */
+    display: inline-flex; /* Needed for padding/margin */
     background-color: #f0f0f0;
     color: #34495e; /* Match h3 color */
     border: 1px solid #dcdcdc; /* Subtle border */
@@ -121,7 +133,7 @@ button, .file-label {
     background-color: #f0f0f0;
     color: #34495e;
     border: 1px solid #dcdcdc;
-     box-shadow: none;
+    box-shadow: none;
 }
 
 .secondary-button:hover {
@@ -130,8 +142,27 @@ button, .file-label {
     transform: translateY(-1px);
 }
 
+/* Tertiary Button Style (Copy/Speak) */
+.tertiary-button {
+    background-color: #e9ecef; /* Light gray */
+    color: #495057; /* Darker gray text */
+    padding: 5px 10px; /* Smaller padding */
+    font-size: 0.85rem; /* Smaller font */
+    border-radius: 6px;
+    box-shadow: none;
+    border: 1px solid #ced4da;
+    gap: 5px; /* Less gap for smaller buttons */
+}
+
+.tertiary-button:hover {
+    background-color: #dee2e6;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
 /* Primary Accent Button (Yellow - Snap) */
 .primary-accent-button {
+    padding: 12px 20px; /* Restore specific padding */
     background-color: #FFDA63; /* Main yellow */
     color: #333;
 }
@@ -150,7 +181,7 @@ button#analyzeButton {
     font-weight: 600;
     width: 100%;
     margin-top: 15px;
-    padding: 14px 25px;
+    padding: 14px 25px; /* Restore specific padding */
 }
 
 button#analyzeButton:hover:not(:disabled) {
@@ -165,6 +196,7 @@ button:disabled, button#analyzeButton:disabled {
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
+    opacity: 0.7; /* Make it look faded */
 }
 /* Ensure label is also visually disabled */
 label.file-label[style*="pointer-events: none"] {
@@ -172,6 +204,7 @@ label.file-label[style*="pointer-events: none"] {
     color: #aaa;
     cursor: not-allowed;
     border-color: #e0e0e0;
+    opacity: 0.7;
 }
 
 
@@ -216,6 +249,10 @@ select#languageSelect:hover {
     border-radius: 8px;
     border: 1px solid #ccc;
     background-color: #333; /* Dark background placeholder */
+}
+.camera-controls {
+    display: flex;
+    gap: 15px;
 }
 
 /* --- Upload Section (Language/Analyze) --- */
@@ -283,19 +320,28 @@ select#languageSelect:hover {
 
 .result-box {
     background-color: #f9f9f9; /* Match camera view background */
-    padding: 25px; /* More padding */
+    padding: 20px 25px; /* Adjust padding */
     border-radius: 12px;
     margin-bottom: 25px;
     border: 1px solid #e5e5e5;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
 
+.result-header {
+    display: flex;
+    justify-content: space-between; /* Push title left, buttons right */
+    align-items: center;
+    margin-bottom: 15px; /* Space between header and pre */
+    gap: 10px; /* Space between buttons if wrapped */
+}
+.result-header div { /* Wrapper for multiple buttons */
+    display: flex;
+    gap: 10px;
+}
+
 .result-box h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #34495e;
-    font-size: 1.15em;
-    font-weight: 500;
+    /* Styles already defined */
+    margin-bottom: 0; /* Remove margin, handled by parent flex */
 }
 
 pre {
@@ -312,6 +358,7 @@ pre {
     max-height: 280px;
     overflow-y: auto;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inset shadow */
+    margin-top: 0; /* Ensure no top margin */
 }
 
 /* --- Error Message Styling --- */
@@ -329,6 +376,7 @@ pre {
     font-size: 1.2em;
     font-weight: 500;
 }
+.error-message h3 i { margin-right: 8px; } /* Style icon */
 
 /* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
@@ -344,6 +392,11 @@ pre {
     }
      .app-header h1 {
         font-size: 1.7em;
+    }
+    .result-header { /* Stack header elements on small screens */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 }
 
@@ -366,14 +419,17 @@ pre {
         font-size: 1.5em;
         letter-spacing: 1px;
     }
-    h2 { font-size: 1.4em; }
-    h3 { font-size: 1.1em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.05em; }
 
     button, .file-label, select {
         font-size: 0.9rem;
+        padding: 9px 14px; /* Adjust padding */
     }
-    .file-label, .secondary-button, .primary-accent-button {
-        padding: 10px 15px;
+    .tertiary-button {
+         padding: 4px 8px;
+         font-size: 0.8rem;
+         gap: 4px;
     }
      button#analyzeButton {
          padding: 12px 20px;
@@ -382,5 +438,5 @@ pre {
         padding-right: 35px;
         background-position: right 12px center;
     }
-    pre { font-size: 0.9em; }
+    pre { font-size: 0.9em; padding: 15px;}
 }
