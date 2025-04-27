@@ -3,46 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Text Translator</title>
-    <!-- Optional: Add a tech-style font like Poppins or Roboto -->
+    <title>Image Translator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Simple Icons (like Font Awesome - optional, but nice for buttons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
         <!-- Tech Header -->
         <header class="app-header">
-             <h1>Image Text Translator</h1>
+             <h1>Image Translator</h1>
         </header>
 
         <!-- Input Selection -->
         <div class="input-options">
-            <label for="imageInput" class="file-label">Upload Image</label>
+            <label for="imageInput" class="file-label"><i class="fa-solid fa-upload"></i> Upload Image</label>
             <input type="file" id="imageInput" accept="image/*">
             <span>OR</span>
-            <button id="startCameraButton" class="secondary-button">Take Picture</button>
+            <button id="startCameraButton" class="secondary-button"><i class="fa-solid fa-camera"></i> Take Picture</button>
         </div>
 
         <!-- Camera View Area (Hidden initially) -->
         <div id="cameraArea" class="camera-view" style="display: none;">
             <video id="videoElement" autoplay playsinline></video>
-            <button id="snapButton" class="primary-accent-button">Snap Photo</button>
-            <button id="cancelCameraButton" class="secondary-button">Cancel</button>
+             <div class="camera-controls">
+                <button id="snapButton" class="primary-accent-button"><i class="fa-solid fa-circle-dot"></i> Snap Photo</button>
+                <button id="cancelCameraButton" class="secondary-button"><i class="fa-solid fa-xmark"></i> Cancel</button>
+            </div>
         </div>
 
         <!-- Common Controls -->
         <div class="upload-section">
             <label for="languageSelect">Translate to:</label>
             <select id="languageSelect">
-                <option value="turkish">Turkish</option>
-                <option value="spanish">Spanish</option>
-                <option value="german">German</option>
-                <option value="french">French</option>
                 <option value="english">English</option>
+                <option value="spanish">Spanish</option>
+                <option value="french">French</option>
+                <option value="german">German</option>
+                <option value="turkish">Turkish</option>
+                <option value="italian">Italian</option>
+                <option value="portuguese">Portuguese</option>
+                <option value="japanese">Japanese</option>
+                <option value="russian">Russian</option>
+                <!-- Add more supported languages here -->
             </select>
-            <button id="analyzeButton" disabled>Analyze & Translate</button>
+            <button id="analyzeButton" disabled><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze & Translate</button>
              <!-- Hidden canvas for capturing frame -->
             <canvas id="canvasElement" style="display: none;"></canvas>
         </div>
@@ -55,26 +63,43 @@
 
         <!-- Preview Area -->
         <div id="previewArea" style="display: none;">
-             <h2>Preview</h2>
+             <h2><i class="fa-solid fa-image"></i> Preview</h2>
              <img id="imagePreview" src="#" alt="Image Preview" />
         </div>
 
         <!-- Results Area -->
         <div id="resultsArea" style="display: none;">
-            <h2>Results</h2>
+            <h2><i class="fa-solid fa-rectangle-list"></i> Results</h2>
+            <!-- Extracted Text Box -->
             <div class="result-box">
-                <h3>Extracted Text:</h3>
+                <div class="result-header">
+                    <h3><i class="fa-solid fa-quote-left"></i> Extracted Text</h3>
+                    <button class="copy-button tertiary-button" data-target="extractedText" title="Copy Extracted Text">
+                        <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                </div>
                 <pre id="extractedText"></pre>
             </div>
+            <!-- Translated Text Box -->
             <div class="result-box">
-                <h3 id="translationLabel">Translated Text:</h3>
+                 <div class="result-header">
+                    <h3 id="translationLabel"><i class="fa-solid fa-language"></i> Translated Text</h3>
+                    <div> <!-- Wrapper for buttons -->
+                        <button id="speakButton" class="tertiary-button" title="Speak Translated Text" style="display: none;"> <!-- Hidden initially -->
+                            <i class="fa-solid fa-volume-high"></i> Speak
+                        </button>
+                        <button class="copy-button tertiary-button" data-target="translatedText" title="Copy Translated Text">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
                 <pre id="translatedText"></pre>
             </div>
         </div>
 
         <!-- Error Area -->
         <div id="errorArea" style="display: none;" class="error-message">
-            <h3>Error</h3>
+            <h3><i class="fa-solid fa-circle-exclamation"></i> Error</h3>
             <p id="errorMessage"></p>
         </div>
     </div>
