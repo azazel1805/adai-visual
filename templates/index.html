@@ -10,10 +10,23 @@
     <h1>Image Text Translator</h1>
 
     <div class="container">
-        <div class="upload-section">
-            <label for="imageInput" class="file-label">Choose or Capture Image</label>
-             <input type="file" id="imageInput" accept="image/*"> <!-- 'capture' attribute removed for broader compatibility -->
+        <!-- Input Selection -->
+        <div class="input-options">
+            <label for="imageInput" class="file-label">Upload Image</label>
+            <input type="file" id="imageInput" accept="image/*">
+            <span>OR</span>
+            <button id="startCameraButton" class="secondary-button">Take Picture</button>
+        </div>
 
+        <!-- Camera View Area (Hidden initially) -->
+        <div id="cameraArea" class="camera-view" style="display: none;">
+            <video id="videoElement" autoplay playsinline></video>
+            <button id="snapButton" class="primary-accent-button">Snap Photo</button>
+            <button id="cancelCameraButton" class="secondary-button">Cancel</button>
+        </div>
+
+        <!-- Common Controls -->
+        <div class="upload-section">
             <label for="languageSelect">Translate to:</label>
             <select id="languageSelect">
                 <option value="turkish">Turkish</option>
@@ -22,20 +35,24 @@
                 <option value="french">French</option>
                 <option value="english">English</option>
             </select>
-
-            <button id="analyzeButton">Analyze & Translate</button>
+            <button id="analyzeButton" disabled>Analyze & Translate</button>
+             <!-- Hidden canvas for capturing frame -->
+            <canvas id="canvasElement" style="display: none;"></canvas>
         </div>
 
+         <!-- Loading Indicator -->
         <div id="loading" style="display: none;">
             <p>Processing image...</p>
             <div class="spinner"></div>
         </div>
 
+        <!-- Preview Area -->
         <div id="previewArea" style="display: none;">
              <h2>Preview</h2>
              <img id="imagePreview" src="#" alt="Image Preview" />
         </div>
 
+        <!-- Results Area -->
         <div id="resultsArea" style="display: none;">
             <h2>Results</h2>
             <div class="result-box">
@@ -48,6 +65,7 @@
             </div>
         </div>
 
+        <!-- Error Area -->
         <div id="errorArea" style="display: none;" class="error-message">
             <h3>Error</h3>
             <p id="errorMessage"></p>
