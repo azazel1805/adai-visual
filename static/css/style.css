@@ -1,146 +1,159 @@
+/* --- Base Styles & Typography --- */
 body {
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Common system fonts */
     line-height: 1.6;
-    margin: 20px;
-    background-color: #f4f4f4;
-    color: #333;
+    margin: 0;
+    padding: 0; /* Remove default body padding */
+    background-color: #f8f5f0; /* A very light, slightly warm off-white background */
+    color: #4a4a4a; /* Dark gray for primary text */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center;
+    align-items: flex-start; /* Align to top */
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    padding: 20px; /* Add padding around the container */
+    box-sizing: border-box; /* Include padding in width/height calculations */
 }
 
 .container {
-    max-width: 700px;
-    margin: auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 750px; /* Slightly wider */
+    width: 100%; /* Take available width up to max-width */
+    background: #ffffff; /* Pure white container */
+    padding: 40px; /* More padding inside */
+    border-radius: 12px; /* Softer corners */
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08); /* Softer, deeper shadow */
+    margin-top: 30px; /* Space from top */
+    margin-bottom: 30px; /* Space from bottom */
+    box-sizing: border-box;
 }
 
+/* --- Headings --- */
 h1, h2, h3 {
-    color: #333;
-    margin-bottom: 1em;
+    color: #333; /* Slightly darker heading color */
+    margin-bottom: 0.8em;
+    font-weight: 600; /* Slightly bolder */
 }
 
+h1 {
+    text-align: center;
+    color: #222;
+    margin-bottom: 1.5em;
+    font-weight: 700;
+}
+
+h2 {
+    border-bottom: 1px solid #eee; /* Subtle separator */
+    padding-bottom: 0.5em;
+    margin-top: 1.8em; /* More space before sections */
+}
+
+h3 {
+    color: #555;
+    font-size: 1.15em;
+    margin-bottom: 0.6em;
+}
+
+/* --- Upload Section --- */
 .upload-section {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
     border-bottom: 1px solid #eee;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Adds space between elements */
+    gap: 20px; /* Space between form elements */
 }
 
 label {
     display: block;
     margin-bottom: 5px;
-    font-weight: bold;
+    font-weight: 600; /* Bold labels */
+    color: #555;
+    font-size: 0.95em;
 }
 
-/* Style the custom file input label like a button */
-.file-label {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
-
-.file-label:hover {
-    background-color: #0056b3;
-}
-
-/* Hide the default file input */
+/* --- Custom File Input & Buttons --- */
+/* Hide default file input */
 input[type="file"] {
    display: none;
 }
 
-select, button {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-button {
-    background-color: #28a745;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #218838;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-#previewArea {
-    margin-top: 20px;
-    text-align: center;
-}
-
-#imagePreview {
-    max-width: 100%;
-    max-height: 400px;
-    margin-top: 10px;
+/* Style the label like a button */
+.file-label {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #f0f0f0; /* Light gray background */
+    color: #444; /* Dark gray text */
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    font-weight: 500;
 }
 
-#resultsArea {
-    margin-top: 20px;
+.file-label:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
 }
 
-.result-box {
-    background-color: #e9ecef;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #ced4da;
+/* Select Dropdown */
+select#languageSelect {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    appearance: none; /* Remove default arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px 10px;
+    padding-right: 35px; /* Space for the arrow */
+    cursor: pointer;
 }
 
-.result-box h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #495057;
-    font-size: 1.1em;
+/* Main Analyze Button */
+button#analyzeButton {
+    padding: 14px 25px; /* Larger padding */
+    /* Main Accent Yellow */
+    background-color: #FFDA63; /* Pleasant Golden Yellow */
+    color: #333; /* Dark text for contrast */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-pre {
-    white-space: pre-wrap; /* Allows text to wrap */
-    word-wrap: break-word; /* Breaks long words */
-    background-color: #f8f9fa;
-    padding: 10px;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 0.95em;
-    max-height: 200px; /* Limit height and make scrollable if needed */
-    overflow-y: auto;
+button#analyzeButton:hover:not(:disabled) {
+    background-color: #E8C558; /* Slightly darker yellow on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+button#analyzeButton:disabled {
+    background-color: #e0e0e0; /* Gray when disabled */
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 
+/* --- Loading Indicator --- */
 #loading {
     text-align: center;
-    padding: 20px;
-    font-size: 1.2em;
-    color: #007bff;
+    padding: 30px 0;
+    font-size: 1.1em;
+    color: #888; /* Softer loading text color */
 }
 
-/* Simple CSS Spinner */
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border-left-color: #007bff;
-    margin: 10px auto;
+    border-left-color: #FFDA63; /* Use accent yellow for spinner */
+    margin: 15px auto;
     animation: spin 1s ease infinite;
 }
 
@@ -149,15 +162,98 @@ pre {
     100% { transform: rotate(360deg); }
 }
 
-.error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 20px;
+/* --- Preview Area --- */
+#previewArea {
+    margin-top: 25px;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #eee; /* Separator */
 }
-.error-message h3{
-    color: #721c24;
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 450px; /* Slightly larger max height */
+    margin-top: 15px;
+    border: 1px solid #e0e0e0; /* Lighter border */
+    border-radius: 8px; /* Match other elements */
+    background-color: #fdfdfd; /* very light background for the image area */
+    padding: 5px; /* Small padding around image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Results Area --- */
+#resultsArea {
+    margin-top: 30px;
+}
+
+.result-box {
+    background-color: #fdfdfd; /* Very light gray/off-white background */
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #eaeaea; /* Subtle border */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.result-box h3 {
     margin-top: 0;
+    margin-bottom: 12px;
+    color: #444; /* Slightly darker than regular text */
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+/* Style for the text boxes */
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #f7f7f7; /* Slightly different background for text */
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; /* Monospace font */
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #333;
+    max-height: 250px; /* Limit height */
+    overflow-y: auto; /* Add scroll if needed */
+}
+
+/* --- Error Message Styling --- */
+.error-message {
+    background-color: #fff3f3; /* Pale red background */
+    color: #9d3838; /* Darker red text */
+    border: 1px solid #f7cccc; /* Reddish border */
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-top: 25px;
+}
+.error-message h3 {
+    color: #8a2c2c; /* Even darker red for heading */
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+/* --- Responsive Adjustments (Optional but good practice) --- */
+@media (max-width: 600px) {
+    body {
+        padding: 10px; /* Less padding on small screens */
+    }
+    .container {
+        padding: 20px; /* Less padding inside container */
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    button, .file-label, select {
+        font-size: 0.95rem; /* Slightly smaller text on buttons/inputs */
+        padding: 10px 15px;
+    }
+    select#languageSelect {
+        padding-right: 30px; /* Adjust arrow spacing */
+    }
 }
