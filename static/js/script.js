@@ -22,9 +22,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('canvasElement'); // Hidden canvas
     const inputOptions = document.querySelector('.input-options'); // Div containing upload/take pic
 
+    // New Feature Elements
+    const copyButtons = document.querySelectorAll('.copy-button');
+    const speakButton = document.getElementById('speakButton');
+
     // --- State Variables ---
     let currentFile = null;
     let currentStream = null; // To hold the MediaStream object
+    let currentTranslationLanguage = null; // Store the language code of the last translation (e.g., 'spanish')
+
+    // --- Language Mapping for TTS ---
+    // Maps our dropdown values to BCP 47 language codes for SpeechSynthesis
+    const languageCodeMap = {
+        'english': 'en-US',
+        'spanish': 'es-ES',
+        'french': 'fr-FR',
+        'german': 'de-DE',
+        'turkish': 'tr-TR',
+        'italian': 'it-IT',
+        'portuguese': 'pt-PT', // Or pt-BR
+        'japanese': 'ja-JP',
+        'russian': 'ru-RU'
+        // Add more mappings if you add languages
+    };
 
     // --- Event Listeners ---
 
@@ -34,8 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (files && files[0]) {
             handleFileSelect(files[0]);
         } else {
-            // If user cancels file selection, don't necessarily reset everything,
-            // especially if a snapshot was previously taken. Only reset if no current file.
             if (!currentFile) {
                  resetState();
             }
@@ -54,6 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Analyze Button Click
     analyzeButton.addEventListener('click', analyzeImage);
 
+    // 6. Copy Buttons Click (Event Delegation could be used, but this is simpler for few buttons)
+    copyButtons.forEach(button => {
+        button.addEventListener('click', handleCopyClick);
+    });
+
+    // 7. Speak Button Click
+    speakButton.addEventListener('click', handleSpeakClick);
+
+
     // --- Core Functions ---
 
     function handleFileSelect(file) {
@@ -69,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cameraArea.style.display = 'none'; // Hide camera
             inputOptions.style.display = 'flex'; // Ensure input options are visible
             analyzeButton.disabled = false; // Enable analyze button
+            speakButton.style.display = 'none'; // Hide speak button
         }
         reader.readAsDataURL(currentFile);
     }
@@ -80,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorArea.style.display = 'none';
         currentFile = null; // Clear any previously selected/snapped file
         analyzeButton.disabled = true; // Disable analyze button
+        speakButton.style.display = 'none'; // Hide speak button
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             try {
@@ -90,13 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 currentStream = stream; // Store stream
                 videoElement.srcObject = stream;
-                // Wait for metadata to load to prevent playing before dimensions are known
                 videoElement.onloadedmetadata = () => {
                    videoElement.play();
                 };
 
-
-                // Update UI
                 cameraArea.style.display = 'flex';
                 inputOptions.style.display = 'none'; // Hide upload/take picture buttons
 
@@ -124,54 +150,45 @@ document.addEventListener('DOMContentLoaded', () => {
     function takeSnapshot() {
         if (!currentStream || !videoElement.videoWidth) {
              console.warn("Stream not ready or video dimensions not available yet.");
-             return; // No stream active or video not ready
+             return;
         }
 
         const context = canvasElement.getContext('2d');
-        // Set canvas dimensions to match video intrinsic size for best quality
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
-
-        // Draw the current video frame onto the canvas
         context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-        // Convert canvas to a Blob, then to a File
         canvasElement.toBlob(async (blob) => {
              if (blob) {
-                // Create a File object (more convenient for FormData)
-                // Use a timestamp for a somewhat unique filename
                 const fileName = `snapshot-${Date.now()}.jpg`;
                 currentFile = new File([blob], fileName, { type: 'image/jpeg' });
 
-                // Display the captured image in the preview area
-                // Revoke previous object URL if one exists to free memory
                 if (imagePreview.src.startsWith('blob:')) {
                     URL.revokeObjectURL(imagePreview.src);
                 }
-                imagePreview.src = URL.createObjectURL(currentFile); // Use createObjectURL for preview
+                imagePreview.src = URL.createObjectURL(currentFile);
                 previewArea.style.display = 'block';
                 analyzeButton.disabled = false; // Enable analysis
+                speakButton.style.display = 'none'; // Hide speak button
 
-                // Stop the camera and hide the camera view
                 stopCameraStream();
 
              } else {
                 showError("Failed to capture snapshot.");
-                stopCameraStream(); // Clean up even on failure
+                stopCameraStream();
              }
-        }, 'image/jpeg', 0.9); // Use JPEG format with 90% quality
+        }, 'image/jpeg', 0.9);
     }
 
     function stopCameraStream() {
         if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop()); // Stop all tracks
-            currentStream = null; // Clear the stream variable
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
         }
-        // Reset UI related to camera
-        videoElement.srcObject = null; // Remove stream from video element
-        videoElement.onloadedmetadata = null; // Remove listener
+        videoElement.srcObject = null;
+        videoElement.onloadedmetadata = null;
         cameraArea.style.display = 'none';
-        inputOptions.style.display = 'flex'; // Show upload/take picture buttons again
+        inputOptions.style.display = 'flex';
     }
 
     async function analyzeImage() {
@@ -182,18 +199,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const selectedLanguage = languageSelect.value;
         const formData = new FormData();
-        formData.append('image', currentFile, currentFile.name); // Append file with its name
+        formData.append('image', currentFile, currentFile.name);
         formData.append('language', selectedLanguage);
 
-        // --- UI Updates: Show loading, hide results/errors ---
         loadingElem.style.display = 'block';
         resultsArea.style.display = 'none';
         errorArea.style.display = 'none';
-        analyzeButton.disabled = true; // Disable button during processing
-        startCameraButton.disabled = true; // Disable camera button too
-        imageInput.disabled = true; // Disable file input temporarily
-        const fileLabel = document.querySelector('.file-label'); // Get label to disable
-        if (fileLabel) fileLabel.style.pointerEvents = 'none'; // Disable clicks on label
+        analyzeButton.disabled = true;
+        startCameraButton.disabled = true;
+        imageInput.disabled = true;
+        const fileLabel = document.querySelector('.file-label');
+        if (fileLabel) fileLabel.style.pointerEvents = 'none';
+        speakButton.style.display = 'none'; // Hide speak button during analysis
 
         try {
             const response = await fetch('/analyze', {
@@ -207,57 +224,182 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || `Server responded with status: ${response.status}`);
             }
 
-            // --- Update UI with results ---
             extractedTextElem.textContent = result.extracted_text || 'No text content received.';
             translatedTextElem.textContent = result.translated_text || 'No translation received.';
-            translationLabelElem.textContent = `Translated Text (${capitalizeFirstLetter(result.target_language || 'Unknown')}):`;
+            translationLabelElem.innerHTML = `<i class="fa-solid fa-language"></i> Translated Text (${capitalizeFirstLetter(result.target_language || 'Unknown')}):`; // Update label with icon
             resultsArea.style.display = 'block';
+            currentTranslationLanguage = result.target_language; // Store the language
+
+            // Show speak button only if translation was successful and text exists
+            if (result.translated_text && result.translated_text !== "No text to translate." && result.translated_text !== "Translation not possible due to extraction error.") {
+                 speakButton.style.display = 'inline-flex'; // Show speak button
+            }
+
 
         } catch (error) {
             console.error("Error during analysis:", error);
             showError(`Analysis failed: ${error.message}`);
-            // Don't clear preview on analysis error, user might want to try again
+            currentTranslationLanguage = null; // Reset language on error
+            speakButton.style.display = 'none'; // Ensure speak button is hidden
         } finally {
-            // --- UI Cleanup: Hide loading, re-enable buttons ---
             loadingElem.style.display = 'none';
-            analyzeButton.disabled = false; // Re-enable analyze button (unless file is cleared)
+            analyzeButton.disabled = false;
             startCameraButton.disabled = false;
             imageInput.disabled = false;
-             if (fileLabel) fileLabel.style.pointerEvents = 'auto'; // Re-enable clicks
-
-            // Decide if you want to clear the file after analysis.
-            // If you clear it, disable the analyze button again.
-            // currentFile = null;
-            // imageInput.value = '';
-            // analyzeButton.disabled = true;
-            // previewArea.style.display = 'none'; // Hide preview if clearing
+             if (fileLabel) fileLabel.style.pointerEvents = 'auto';
         }
     }
+
+    // --- New Feature Handlers ---
+
+    function handleCopyClick(event) {
+        const button = event.currentTarget; // Use currentTarget for attached listener
+        const targetId = button.dataset.target;
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+            const textToCopy = targetElement.textContent;
+            if (!textToCopy) {
+                console.warn("Nothing to copy from:", targetId);
+                return; // Nothing to copy
+            }
+
+            if (navigator.clipboard && window.isSecureContext) { // Check for secure context
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Success feedback
+                    const originalText = button.innerHTML; // Store original content (including icon)
+                    button.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    button.disabled = true;
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 1500); // Reset after 1.5 seconds
+                }).catch(err => {
+                    console.error("Failed to copy text: ", err);
+                    showError("Could not copy text to clipboard."); // Show user error
+                });
+            } else {
+                console.warn("Clipboard API not available or context is not secure.");
+                // Basic fallback for older browsers (less reliable)
+                try {
+                   const textArea = document.createElement("textarea");
+                   textArea.value = textToCopy;
+                   textArea.style.position = "fixed"; // Prevent scrolling
+                   textArea.style.opacity = "0";
+                   document.body.appendChild(textArea);
+                   textArea.focus();
+                   textArea.select();
+                   document.execCommand('copy');
+                   document.body.removeChild(textArea);
+                   // Add feedback here too
+                   const originalText = button.innerHTML;
+                   button.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                   button.disabled = true;
+                   setTimeout(() => {
+                       button.innerHTML = originalText;
+                       button.disabled = false;
+                    }, 1500);
+                } catch (e) {
+                     showError("Copying failed. Please copy manually.");
+                }
+            }
+        } else {
+            console.error("Target element for copy not found:", targetId);
+        }
+    }
+
+    function handleSpeakClick() {
+         if (!('speechSynthesis' in window)) {
+            showError("Sorry, your browser doesn't support text-to-speech.");
+            return;
+        }
+
+        const textToSpeak = translatedTextElem.textContent;
+        if (!textToSpeak || !currentTranslationLanguage) {
+            console.warn("No translated text or language available to speak.");
+            return;
+        }
+
+        // Stop any currently speaking utterance before starting a new one
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+
+
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+        // Map our language value to a BCP 47 code
+        const langCode = languageCodeMap[currentTranslationLanguage.toLowerCase()]; // Use lowercase key
+
+        if (langCode) {
+            utterance.lang = langCode;
+        } else {
+            console.warn(`No language code mapping found for: ${currentTranslationLanguage}. Using browser default.`);
+            // Optional: Fallback to english or browser default if map fails
+             // utterance.lang = 'en-US';
+        }
+
+        // Optional: You could try to select a specific voice here
+        // const voices = window.speechSynthesis.getVoices();
+        // utterance.voice = voices.find(voice => voice.lang === langCode);
+
+        utterance.onerror = (event) => {
+            console.error("SpeechSynthesisUtterance.onerror", event);
+            showError(`Speech error: ${event.error}`);
+        };
+
+         utterance.onend = () => {
+             speakButton.disabled = false; // Re-enable button when speech ends
+         };
+
+         utterance.onstart = () => {
+            speakButton.disabled = true; // Disable button while speaking
+         };
+
+
+        // Speak the utterance
+        window.speechSynthesis.speak(utterance);
+    }
+
 
     // --- Helper Functions ---
     function showError(message) {
         errorMessageElem.textContent = message;
         errorArea.style.display = 'block';
-        resultsArea.style.display = 'none'; // Hide results when showing error
-        loadingElem.style.display = 'none'; // Hide loading when showing error
+        resultsArea.style.display = 'none';
+        loadingElem.style.display = 'none';
+        speakButton.style.display = 'none'; // Hide speak button on error
     }
 
     function resetState() {
-         // Clear file, preview, results, errors
-         stopCameraStream(); // Ensure camera is off
+        stopCameraStream();
 
-         // Revoke object URL if it exists
-         if (imagePreview.src.startsWith('blob:')) {
-            URL.revokeObjectURL(imagePreview.src);
-         }
+        if (imagePreview.src.startsWith('blob:')) {
+           URL.revokeObjectURL(imagePreview.src);
+        }
+        // Stop any ongoing speech synthesis
+        if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+           window.speechSynthesis.cancel();
+        }
 
-         currentFile = null;
-         imageInput.value = ''; // Clear file input selection
-         imagePreview.src = '#';
-         previewArea.style.display = 'none';
-         resultsArea.style.display = 'none';
-         errorArea.style.display = 'none';
-         analyzeButton.disabled = true; // Disable analyze button until new input
+        currentFile = null;
+        imageInput.value = '';
+        imagePreview.src = '#';
+        previewArea.style.display = 'none';
+        resultsArea.style.display = 'none';
+        errorArea.style.display = 'none';
+        analyzeButton.disabled = true;
+        speakButton.style.display = 'none'; // Hide speak button
+        currentTranslationLanguage = null; // Reset language
+
+        // Reset copy button text/state if needed (optional)
+        copyButtons.forEach(button => {
+            const icon = button.querySelector('i');
+            if(icon && icon.classList.contains('fa-check')){ // If it shows 'Copied'
+                 button.innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; // Reset
+                 button.disabled = false;
+            }
+        });
     }
 
 
@@ -267,7 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Initial State ---
-     resetState(); // Call reset state initially to set up the correct initial UI
-
+     resetState(); // Call reset state initially
 
 }); // End DOMContentLoaded
