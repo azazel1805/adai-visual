@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Translator</title>
+    <title>Image Analyzer & Translator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Simple Icons (like Font Awesome - optional, but nice for buttons) -->
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -15,7 +15,7 @@
     <div class="container">
         <!-- Tech Header -->
         <header class="app-header">
-             <h1>Image Translator</h1>
+             <h1>Image Analyzer & Translator</h1>
         </header>
 
         <!-- Input Selection -->
@@ -35,9 +35,9 @@
             </div>
         </div>
 
-        <!-- Common Controls -->
+        <!-- Common Controls & Actions -->
         <div class="upload-section">
-            <label for="languageSelect">Translate to:</label>
+            <label for="languageSelect">Translate extracted text to:</label>
             <select id="languageSelect">
                 <option value="english">English</option>
                 <option value="spanish">Spanish</option>
@@ -50,14 +50,18 @@
                 <option value="russian">Russian</option>
                 <!-- Add more supported languages here -->
             </select>
-            <button id="analyzeButton" disabled><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze & Translate</button>
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="identifyObjectsButton" class="secondary-button" disabled><i class="fa-solid fa-magnifying-glass"></i> Identify Objects</button>
+                <button id="analyzeButton" disabled><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze & Translate</button>
+            </div>
              <!-- Hidden canvas for capturing frame -->
             <canvas id="canvasElement" style="display: none;"></canvas>
         </div>
 
          <!-- Loading Indicator -->
         <div id="loading" style="display: none;">
-            <p>Processing image...</p>
+            <p id="loadingText">Processing...</p>
             <div class="spinner"></div>
         </div>
 
@@ -67,9 +71,18 @@
              <img id="imagePreview" src="#" alt="Image Preview" />
         </div>
 
-        <!-- Results Area -->
+        <!-- Object Identification Results Area -->
+        <div id="objectsArea" style="display: none;">
+            <h2><i class="fa-solid fa-cubes"></i> Identified Objects</h2>
+            <div class="result-box">
+                 <p id="identifiedObjectsText"></p>
+            </div>
+        </div>
+
+
+        <!-- Text Analysis Results Area -->
         <div id="resultsArea" style="display: none;">
-            <h2><i class="fa-solid fa-rectangle-list"></i> Results</h2>
+            <h2><i class="fa-solid fa-rectangle-list"></i> Text Analysis</h2>
             <!-- Extracted Text Box -->
             <div class="result-box">
                 <div class="result-header">
@@ -85,7 +98,7 @@
                  <div class="result-header">
                     <h3 id="translationLabel"><i class="fa-solid fa-language"></i> Translated Text</h3>
                     <div> <!-- Wrapper for buttons -->
-                        <button id="speakButton" class="tertiary-button" title="Speak Translated Text" style="display: none;"> <!-- Hidden initially -->
+                        <button id="speakButton" class="tertiary-button" title="Speak Translated Text" style="display: none;">
                             <i class="fa-solid fa-volume-high"></i> Speak
                         </button>
                         <button class="copy-button tertiary-button" data-target="translatedText" title="Copy Translated Text">
