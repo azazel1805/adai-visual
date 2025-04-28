@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingElem = document.getElementById('loading');
     const errorArea = document.getElementById('errorArea');
     const errorMessageElem = document.getElementById('errorMessage');
-    const fileLabel = document.querySelector('.file-label');
+    const fileLabel = document.querySelector('.file-label'); // File input label
 
     // Camera related elements
     const startCameraButton = document.getElementById('startCameraButton');
@@ -20,24 +20,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoElement = document.getElementById('videoElement');
     const snapButton = document.getElementById('snapButton');
     const cancelCameraButton = document.getElementById('cancelCameraButton');
-    const canvasElement = document.getElementById('canvasElement');
-    const inputOptions = document.querySelector('.input-options');
+    const canvasElement = document.getElementById('canvasElement'); // Hidden canvas
+    const inputOptions = document.querySelector('.input-options'); // Div containing upload/take pic
 
     // New Feature Elements
     const copyButtons = document.querySelectorAll('.copy-button');
     const speakButton = document.getElementById('speakButton');
-    const identifyObjectsButton = document.getElementById('identifyObjectsButton');
-    const objectsArea = document.getElementById('objectsArea');
-    const identifiedObjectsText = document.getElementById('identifiedObjectsText');
-    const loadingText = document.getElementById('loadingText');
-    const analyzeCorrectButton = document.getElementById('analyzeCorrectButton');
-    const correctionArea = document.getElementById('correctionArea');
-    const correctedTextElem = document.getElementById('correctedText');
+    const identifyObjectsButton = document.getElementById('identifyObjectsButton'); // New button
+    const objectsArea = document.getElementById('objectsArea');           // New results area
+    const identifiedObjectsText = document.getElementById('identifiedObjectsText'); // New results text element
+    const loadingText = document.getElementById('loadingText');           // Loading text element
+    const analyzeCorrectButton = document.getElementById('analyzeCorrectButton'); // New button
+    const correctionArea = document.getElementById('correctionArea');       // New results area
+    const correctedTextElem = document.getElementById('correctedText');       // New results text element
 
     // --- State Variables ---
     let currentFile = null;
-    let currentStream = null;
-    let currentTranslationLanguage = null;
+    let currentStream = null; // To hold the MediaStream object
+    let currentTranslationLanguage = null; // Store the language code of the last translation (e.g., 'spanish')
 
     // --- Language Mapping for TTS ---
     const languageCodeMap = {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     imageInput.addEventListener('change', (event) => {
         const files = event.target.files;
         if (files && files[0]) handleFileSelect(files[0]);
-        else if (!currentFile) resetState();
+        else if (!currentFile) resetState(); // Reset only if nothing was selected/present
     });
     startCameraButton.addEventListener('click', startCamera);
     snapButton.addEventListener('click', takeSnapshot);
@@ -64,25 +64,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Core Functions ---
 
     function handleFileSelect(file) {
-        stopCameraStream();
+        stopCameraStream(); // Ensure camera is off
         currentFile = file;
         const reader = new FileReader();
         reader.onload = function(e) {
             imagePreview.src = e.target.result;
-            previewArea.style.display = 'block';
-            hideResultAreas();
+            previewArea.style.display = 'block'; // Makes the container visible
+            // ***** FIX HERE: Pass false to keep preview visible *****
+            hideResultAreas(false);
+            // ***** END FIX *****
             cameraArea.style.display = 'none';
             inputOptions.style.display = 'flex';
-            enableActionButtons(true);
+            enableActionButtons(true); // Enable Analyze & Identify
+            speakButton.style.display = 'none';
+            analyzeCorrectButton.style.display = 'none';
         }
         reader.readAsDataURL(currentFile);
     }
 
     async function startCamera() {
-        hideResultAreas();
+        hideResultAreas(); // Hide all results including preview
         errorArea.style.display = 'none';
         currentFile = null;
-        enableActionButtons(false);
+        enableActionButtons(false); // Disable Analyze & Identify
         speakButton.style.display = 'none';
         analyzeCorrectButton.style.display = 'none';
 
@@ -92,13 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentStream = stream;
                 videoElement.srcObject = stream;
                 videoElement.onloadedmetadata = () => { videoElement.play(); };
-                cameraArea.style.display = 'block'; // Show as block now due to card style
+                cameraArea.style.display = 'block'; // Show camera card
                 inputOptions.style.display = 'none';
             } catch (err) {
                 console.error("Error accessing camera:", err);
                 let userMessage = `Could not access the camera. Error: ${err.name}. Ensure permission is granted and no other app is using it.`;
                 showError(userMessage);
-                stopCameraStream();
+                stopCameraStream(); // Clean up UI
             }
         } else {
             showError("Camera access is not supported by your browser.");
@@ -120,10 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentFile = new File([blob], fileName, { type: 'image/jpeg' });
                 if (imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
                 imagePreview.src = URL.createObjectURL(currentFile);
-                previewArea.style.display = 'block'; // Show as block due to card style
-                enableActionButtons(true);
-                hideResultAreas(); // Hide results after taking new snap
-                stopCameraStream();
+                previewArea.style.display = 'block'; // Makes the container visible
+                enableActionButtons(true); // Enable Analyze & Identify
+                // ***** FIX HERE: Pass false to keep preview visible *****
+                hideResultAreas(false);
+                // ***** END FIX *****
+                speakButton.style.display = 'none';
+                analyzeCorrectButton.style.display = 'none';
+                stopCameraStream(); // Stops stream and hides camera view
              } else {
                 showError("Failed to capture snapshot.");
                 stopCameraStream();
@@ -140,10 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         videoElement.onloadedmetadata = null;
         cameraArea.style.display = 'none';
         inputOptions.style.display = 'flex';
-        enableActionButtons(!!currentFile); // Enable actions only if file exists
+        // Enable actions only if a file/snapshot is currently loaded
+        enableActionButtons(!!currentFile);
     }
 
-    async function analyzeImage() {
+    async function analyzeImage() { // Text analysis and translation
         if (!currentFile) { showError("Please select or capture an image first."); return; }
 
         const selectedLanguage = languageSelect.value;
@@ -162,33 +171,35 @@ document.addEventListener('DOMContentLoaded', () => {
             extractedTextElem.textContent = result.extracted_text || 'No text content received.';
             translatedTextElem.textContent = result.translated_text || 'No translation received.';
             translationLabelElem.innerHTML = `<i class="fa-solid fa-language"></i> Translated Text (${capitalizeFirstLetter(result.target_language || 'Unknown')}):`;
-            resultsArea.style.display = 'block'; // Show this section
+            resultsArea.style.display = 'block'; // Show text results section
             currentTranslationLanguage = result.target_language;
 
+            // Enable Correction Button only if extraction was successful
             const hasExtractedText = result.extracted_text && result.extracted_text !== "No text found." && !result.extracted_text.startsWith("Error:");
             updateCorrectionButtonState(hasExtractedText);
 
+            // Show speak button logic
             speakButton.style.display = (result.translated_text && result.translated_text !== "No text to translate." && !result.translated_text.startsWith("Error:")) ? 'inline-flex' : 'none';
 
         } catch (error) {
             console.error("Error during text analysis:", error);
             showError(`Text analysis failed: ${error.message}`);
             currentTranslationLanguage = null;
-            updateCorrectionButtonState(false);
+            updateCorrectionButtonState(false); // Ensure correct button is hidden/disabled
             speakButton.style.display = 'none';
         } finally {
             setLoadingState(false);
         }
     }
 
-    async function identifyObjects() {
+    async function identifyObjects() { // Object identification
         if (!currentFile) { showError("Please select or capture an image first."); return; }
 
         const formData = new FormData();
         formData.append('image', currentFile, currentFile.name);
 
         setLoadingState(true, 'Identifying Objects...');
-        hideResultAreas(false); // Keep preview visible
+        hideResultAreas(false); // Keep preview visible, hide result sections
 
         try {
             const response = await fetch('/identify', { method: 'POST', body: formData });
@@ -197,6 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             identifiedObjectsText.textContent = result.identified_objects || 'No objects identified or described.';
             objectsArea.style.display = 'block'; // Show object results area
+            // Ensure other results remain hidden if this was the only action
+            resultsArea.style.display = 'none';
+            correctionArea.style.display = 'none';
+            analyzeCorrectButton.style.display = 'none';
+            speakButton.style.display = 'none';
+
 
         } catch (error) {
             console.error("Error during object identification:", error);
@@ -206,13 +223,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function analyzeAndCorrectText() {
+    async function analyzeAndCorrectText() { // Correct extracted text
         const textToCorrect = extractedTextElem.textContent;
         if (!textToCorrect || textToCorrect === "No text found." || textToCorrect.startsWith("Error:")) {
             showError("No valid extracted text available to analyze.");
             return;
         }
 
+        // Disable button immediately to prevent double clicks
+        analyzeCorrectButton.disabled = true;
         setLoadingState(true, 'Analyzing for corrections...');
         correctionArea.style.display = 'none'; // Hide previous corrections
 
@@ -227,17 +246,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             correctedTextElem.textContent = result.corrected_text || 'No correction suggestions provided.';
             correctionArea.style.display = 'block'; // Show correction area
-            resultsArea.style.display = 'block'; // Ensure text analysis area is visible
+            // Ensure main text area is still visible if it was before
+            if(extractedTextElem.textContent) resultsArea.style.display = 'block';
 
         } catch (error) {
             console.error("Error during text correction:", error);
             showError(`Text correction failed: ${error.message}`);
+            correctionArea.style.display = 'none'; // Hide on error
         } finally {
-            setLoadingState(false);
-            // Re-check if correction button should be enabled
+            setLoadingState(false); // This will re-enable buttons based on file state
+            // Re-evaluate final state of correction button (might still be valid text)
             updateCorrectionButtonState(!!extractedTextElem.textContent && extractedTextElem.textContent !== "No text found." && !extractedTextElem.textContent.startsWith("Error:"));
         }
     }
+
 
     // --- UI State Helpers ---
     function setLoadingState(isLoading, message = 'Processing...') {
@@ -249,15 +271,16 @@ document.addEventListener('DOMContentLoaded', () => {
         elementsToDisable.forEach(el => { if(el) el.disabled = isLoading; });
         if (fileLabel) fileLabel.style.pointerEvents = isLoading ? 'none' : 'auto';
 
-        // Hide buttons that depend on results
+        // Hide buttons that depend on results during loading
         speakButton.style.display = 'none';
         if(isLoading) {
             analyzeCorrectButton.style.display = 'none';
             errorArea.style.display = 'none'; // Hide error when loading starts
+             // Don't hide preview here, handled by calling functions
         }
 
         if (!isLoading) {
-            // After loading, re-enable buttons based on file state
+            // After loading, re-enable main action buttons based on file state
             enableActionButtons(!!currentFile);
              // Re-evaluate correction button state after loading finishes
             updateCorrectionButtonState(!!extractedTextElem.textContent && extractedTextElem.textContent !== "No text found." && !extractedTextElem.textContent.startsWith("Error:"));
@@ -270,15 +293,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCorrectionButtonState(enabled) {
+        // Enables/disables and shows/hides the Correct Text button
         analyzeCorrectButton.disabled = !enabled;
         analyzeCorrectButton.style.display = enabled ? 'inline-flex' : 'none';
     }
 
     function hideResultAreas(hidePreview = true) {
+         // Hides all result sections, conditionally hiding preview
          if(hidePreview) previewArea.style.display = 'none';
          resultsArea.style.display = 'none';
          objectsArea.style.display = 'none';
          correctionArea.style.display = 'none';
+         // Also hide buttons related to these areas
          speakButton.style.display = 'none';
          analyzeCorrectButton.style.display = 'none';
     }
@@ -290,20 +316,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetElement = document.getElementById(targetId);
 
         if (targetElement) {
-            const textToCopy = targetElement.textContent?.trim(); // Use optional chaining and trim
+            const textToCopy = targetElement.textContent?.trim();
             if (!textToCopy) return;
 
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalHTML = button.innerHTML;
                 button.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
                 button.disabled = true;
-                // Add a class for feedback styling
                 button.classList.add('copied-feedback');
                 setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.disabled = false;
-                    button.classList.remove('copied-feedback');
-                }, 1800); // Slightly longer feedback
+                    // Restore only if the button hasn't been disabled by other means
+                    if (button.classList.contains('copied-feedback')) {
+                         button.innerHTML = originalHTML;
+                         button.disabled = false;
+                         button.classList.remove('copied-feedback');
+                    }
+                }, 1800);
             }).catch(err => {
                 console.error("Clipboard copy failed:", err);
                 showError("Could not copy text. Please try manually.");
@@ -333,13 +361,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Helper Functions ---
     function showError(message) {
         errorMessageElem.textContent = message;
-        errorArea.style.display = 'block'; // Show as block due to card
-        hideResultAreas(false); // Hide results but keep preview if shown
-        setLoadingState(false); // Ensure loading indicator is off and buttons reset correctly
+        errorArea.style.display = 'block'; // Show error card
+        // Hide results/objects/corrections, but keep preview if visible
+        hideResultAreas(false);
+        // Ensure loading indicator is off and buttons reset correctly
+        setLoadingState(false);
+        // Specifically hide speak/correct buttons on error
+        speakButton.style.display = 'none';
+        analyzeCorrectButton.style.display = 'none';
     }
 
     function resetState() {
-        stopCameraStream();
+        stopCameraStream(); // Stops camera and resets relevant UI
         if (imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
         if ('speechSynthesis' in window && window.speechSynthesis.speaking) window.speechSynthesis.cancel();
 
@@ -348,23 +381,24 @@ document.addEventListener('DOMContentLoaded', () => {
         imagePreview.src = '#';
         hideResultAreas(true); // Hide all results including preview
         errorArea.style.display = 'none';
+        extractedTextElem.textContent = ''; // Clear text from elements too
+        translatedTextElem.textContent = '';
         identifiedObjectsText.textContent = '';
         correctedTextElem.textContent = '';
         loadingText.textContent = 'Processing...';
         currentTranslationLanguage = null;
         enableActionButtons(false); // Disable main actions
-        updateCorrectionButtonState(false); // Disable correction button
+        updateCorrectionButtonState(false); // Ensure correction button is hidden/disabled
 
         // Reset copy buttons visual state
         copyButtons.forEach(button => {
-            if(button.classList.contains('copied-feedback')){
-                 button.innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; // Adjust if icon changed
+            // More robust check in case innerHTML was modified differently
+            if(button.disabled || button.classList.contains('copied-feedback')){
+                 // Assume original icon was copy if resetting
+                 const originalIconHTML = '<i class="fa-regular fa-copy"></i> Copy'; // Reconstruct original state
+                 button.innerHTML = originalIconHTML;
                  button.disabled = false;
                  button.classList.remove('copied-feedback');
-            } else if (button.disabled && button.querySelector('i.fa-check')) {
-                 // Fallback if class wasn't added but it shows copied
-                 button.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
-                 button.disabled = false;
             }
         });
     }
