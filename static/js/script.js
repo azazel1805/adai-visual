@@ -259,6 +259,34 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCorrectionButtonState(!!extractedTextElem.textContent && extractedTextElem.textContent !== "No text found." && !extractedTextElem.textContent.startsWith("Error:"));
         }
     }
+    async function estimateAge() {
+        if (!currentFile) { showError("Please select or capture an image first."); return; }
+
+        const formData = new FormData();
+        formData.append('image', currentFile, currentFile.name);
+
+        setLoadingState(true, 'Estimating Age...');
+        hideResultAreas(false); // Keep preview visible, hide results
+
+        try {
+            const response = await fetch('/estimate_age', { // Call the NEW endpoint
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || `Server error ${response.status}`);
+
+            // Display the age estimate
+            ageEstimateText.textContent = result.estimated_age || 'Could not estimate age.';
+            ageEstimateArea.style.display = 'block'; // Show age estimate area
+
+        } catch (error) {
+            console.error("Error during age estimation:", error);
+            showError(`Age estimation failed: ${error.message}`);
+        } finally {
+            setLoadingState(false);
+        }
+    }
 
 
     // --- UI State Helpers ---
