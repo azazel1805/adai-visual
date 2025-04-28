@@ -3,15 +3,20 @@
     --primary-font: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --monospace-font: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
-    --bg-color: #f0f2f5; /* Light gray background */
-    --card-bg: #ffffff;
-    --header-grad-start: #3a506b; /* Deeper blue */
-    --header-grad-end: #1c2a3a;   /* Darker blue-gray */
-    --header-text: #e0e8f0;
-    --accent-yellow: #FFDA63;
-    --accent-yellow-dark: #E8C558;
-    --primary-action-bg: #1e88e5; /* Brighter Blue */
-    --primary-action-hover: #1565c0; /* Darker Blue */
+    /* Theme: Yellow/White Main, Red Accent */
+    --bg-color: #f8f9fa; /* Very light gray/off-white background */
+    --card-bg: #ffffff; /* White cards */
+    --header-grad-start: #343a40; /* Keep dark header for contrast */
+    --header-grad-end: #212529;
+    --header-text: #f8f9fa; /* Light text on dark header */
+    --header-border: #dc3545; /* Red border accent */
+
+    --accent-yellow: #FFEB3B; /* Main Yellow */
+    --accent-yellow-dark: #FBC02D; /* Darker Yellow for hover/borders */
+    --primary-action-bg: #dc3545; /* Red for primary action */
+    --primary-action-hover: #c82333; /* Darker Red */
+
+    /* Grays for secondary/tertiary */
     --secondary-button-bg: #e9ecef;
     --secondary-button-hover: #dee2e6;
     --secondary-button-border: #ced4da;
@@ -22,18 +27,22 @@
     --text-dark: #212529;
     --text-medium: #495057;
     --text-light: #6c757d;
+    --text-on-primary: #ffffff; /* Text on Red button */
+    --text-on-accent: #212529; /* Text on Yellow button */
+
     --border-color: #dee2e6;
-    --border-color-light: #e9ecef;
-    --error-bg: #fdecea;
+    --border-color-light: #f1f3f5;
+    /* Error Colors (Red-based - already fits) */
+    --error-bg: #f8d7da;
     --error-border: #f5c6cb;
     --error-text: #721c24;
     --error-header: #5a141c;
 
-    --base-border-radius: 12px;
-    --small-border-radius: 8px;
-    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.05);
-    --button-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    --button-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --base-border-radius: 10px;
+    --small-border-radius: 6px;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04); /* Softer shadow */
+    --button-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --button-hover-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
 }
 
 /* --- Global Styles --- */
@@ -56,17 +65,17 @@ body {
 }
 
 .container {
-    max-width: 850px; /* Slightly wider */
+    max-width: 850px;
     width: 100%;
-    background: transparent; /* Container is just for positioning */
-    padding: 0; /* Remove padding from container */
-    border-radius: 0; /* No rounding on main container */
-    box-shadow: none; /* No shadow on main container */
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
     margin-top: 30px;
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Space between cards */
+    gap: 25px;
 }
 
 /* --- Card Style --- */
@@ -77,29 +86,24 @@ body {
     box-shadow: var(--card-shadow);
     border: 1px solid var(--border-color-light);
 }
-/* Adjust padding for result boxes inside cards */
-.result-box.card {
-    padding: 25px;
-}
-
+.result-box.card { padding: 25px; }
 
 /* --- App Header --- */
 .app-header {
     background: linear-gradient(135deg, var(--header-grad-start), var(--header-grad-end));
     color: var(--header-text);
     padding: 25px 30px;
-    border-radius: var(--base-border-radius) var(--base-border-radius) 0 0; /* Only top corners rounded if it's the first card */
+    border-radius: var(--base-border-radius) var(--base-border-radius) 0 0;
     text-align: center;
-    border-bottom: 4px solid var(--accent-yellow);
-    margin: 0; /* Remove negative margins */
-    box-shadow: none; /* Remove separate shadow, rely on card shadow */
+    border-bottom: 4px solid var(--header-border); /* Red border */
+    margin: 0;
+    box-shadow: none;
 }
-.container > *:first-child.app-header { /* Only round top if it's the very first element */
+.container > *:first-child.app-header {
      border-radius: var(--base-border-radius) var(--base-border-radius) 0 0;
 }
-
 .app-header h1 {
-    font-size: 1.8em; /* Adjusted size */
+    font-size: 1.8em;
     font-weight: 500;
     letter-spacing: 1px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
@@ -107,16 +111,16 @@ body {
 
 /* --- General Headings (h2, h3) --- */
 h2 {
-    color: var(--header-grad-start); /* Use header color */
+    color: var(--text-dark); /* Dark heading */
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.6em;
-    margin-bottom: 1.2em; /* More space below h2 */
+    margin-bottom: 1.2em;
     font-weight: 500;
     font-size: 1.4em;
     display: flex;
     align-items: center;
 }
-h2 i { margin-right: 10px; opacity: 0.8; font-size: 0.9em; }
+h2 i { margin-right: 10px; opacity: 0.8; font-size: 0.9em; color: var(--primary-action-bg); } /* Red icon */
 
 h3 {
     color: var(--text-medium);
@@ -126,7 +130,7 @@ h3 {
     display: flex;
     align-items: center;
 }
-h3 i { margin-right: 8px; opacity: 0.8; font-size: 0.9em; }
+h3 i { margin-right: 8px; opacity: 0.8; font-size: 0.9em; color: var(--text-light); } /* Lighter icon */
 
 /* --- Input Options Card --- */
 .input-options {
@@ -135,9 +139,7 @@ h3 i { margin-right: 8px; opacity: 0.8; font-size: 0.9em; }
     justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
-    border-bottom: none; /* Remove bottom border, card provides separation */
-    padding-bottom: 0; /* Remove extra padding */
-    margin-bottom: 0; /* Remove extra margin */
+    border: none;
 }
 .input-options .separator-text {
     color: var(--text-light);
@@ -151,8 +153,7 @@ h3 i { margin-right: 8px; opacity: 0.8; font-size: 0.9em; }
     display: flex;
     flex-direction: column;
     gap: 20px;
-    border-top: none; /* Remove top border */
-    padding-top: 0; /* Remove extra padding */
+    border: none;
 }
 .controls-section label {
     margin-bottom: 2px;
@@ -164,7 +165,7 @@ h3 i { margin-right: 8px; opacity: 0.8; font-size: 0.9em; }
 /* --- Base Button Styles --- */
 button, .file-label {
     padding: 10px 18px;
-    border: 1px solid transparent; /* Start with transparent border */
+    border: 1px solid transparent;
     border-radius: var(--small-border-radius);
     cursor: pointer;
     font-size: 0.95rem;
@@ -176,19 +177,19 @@ button, .file-label {
     justify-content: center;
     gap: 8px;
     vertical-align: middle;
-    text-decoration: none; /* Remove underline from label */
-    color: var(--text-dark); /* Default text color */
+    text-decoration: none;
+    color: var(--text-dark); /* Default */
 }
 button:focus-visible, .file-label:focus-visible, select:focus-visible {
-    outline: 2px solid var(--primary-action-hover);
+    outline: 2px solid var(--primary-action-hover); /* Use red for focus */
     outline-offset: 2px;
 }
 button i, .file-label i { pointer-events: none; }
 
-/* Primary Action Button (Analyze & Translate) */
+/* Primary Action Button (Analyze & Translate - RED) */
 .primary-action-button {
     background-color: var(--primary-action-bg);
-    color: white;
+    color: var(--text-on-primary); /* White text */
     font-weight: 600;
     box-shadow: var(--button-shadow);
 }
@@ -198,7 +199,7 @@ button i, .file-label i { pointer-events: none; }
     transform: translateY(-1px);
 }
 
-/* Secondary Button (Upload, Take Pic, Identify) */
+/* Secondary Button (Upload, Take Pic, Identify - Light Gray) */
 .secondary-button, .file-label {
     background-color: var(--secondary-button-bg);
     color: var(--text-medium);
@@ -210,7 +211,7 @@ button i, .file-label i { pointer-events: none; }
     transform: translateY(-1px);
 }
 
-/* Tertiary Button (Copy, Speak, Correct) */
+/* Tertiary Button (Copy, Speak, Correct - Lighter Gray) */
 .tertiary-button {
     background-color: var(--tertiary-button-bg);
     color: var(--text-medium);
@@ -225,15 +226,15 @@ button i, .file-label i { pointer-events: none; }
     border-color: darken(var(--tertiary-button-border), 10%);
     transform: translateY(-1px);
 }
-.tertiary-button i.fa-check { color: var(--primary-action-bg); } /* Green check for copied */
+.tertiary-button i.fa-check { color: var(--primary-action-bg); } /* Use Red check for copied */
 
-
-/* Accent Button (Snap Photo) */
+/* Accent Button (Snap Photo - YELLOW) */
 .primary-accent-button {
     background-color: var(--accent-yellow);
-    color: var(--text-dark);
+    color: var(--text-on-accent); /* Dark text */
     font-weight: 600;
     box-shadow: var(--button-shadow);
+    border: 1px solid var(--accent-yellow-dark); /* Add border for definition */
 }
 .primary-accent-button:hover:not(:disabled) {
     background-color: var(--accent-yellow-dark);
@@ -251,6 +252,7 @@ button:disabled, .file-label[style*="pointer-events: none"] {
     transform: none !important;
     opacity: 0.65 !important;
 }
+
 
 /* --- Action Buttons Layout --- */
 .action-buttons {
@@ -291,12 +293,12 @@ select#languageSelect:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; /* Increased gap */
-    border: none; /* Remove border, use card style */
+    gap: 20px;
+    border: none;
 }
 #videoElement {
     width: 100%;
-    max-width: 600px; /* Allow slightly larger video */
+    max-width: 600px;
     height: auto;
     border-radius: var(--small-border-radius);
     border: 1px solid var(--border-color);
@@ -322,7 +324,7 @@ select#languageSelect:hover {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border-left-color: var(--accent-yellow); /* Use accent color */
+    border-left-color: var(--accent-yellow); /* Yellow spinner */
     margin: 15px auto;
     animation: spin 1s linear infinite;
 }
@@ -331,14 +333,14 @@ select#languageSelect:hover {
 /* --- Preview Area --- */
 #previewArea {
     text-align: center;
-    border: none; /* Use card style */
+    border: none;
 }
 #imagePreview {
     max-width: 100%;
-    max-height: 550px; /* Increased max height */
+    max-height: 550px;
     margin-top: 10px;
     border-radius: var(--small-border-radius);
-    background-color: var(--card-bg); /* Match card bg */
+    background-color: var(--card-bg);
     padding: 5px;
     border: 1px solid var(--border-color-light);
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -346,40 +348,41 @@ select#languageSelect:hover {
 
 /* --- Results Areas (Objects, Text, Corrections) --- */
 #resultsArea h2, #objectsArea h2 {
-     margin-bottom: 1em; /* Ensure space below section headers */
+     margin-bottom: 1em;
 }
 
 .result-box {
-    background-color: var(--card-bg); /* Ensure white background */
+    background-color: var(--card-bg);
     padding: 20px 25px;
     border-radius: var(--base-border-radius);
-    margin-bottom: 20px; /* Space between result boxes */
+    margin-bottom: 20px;
     border: 1px solid var(--border-color-light);
-    box-shadow: none; /* Remove individual shadow, rely on card */
+    box-shadow: none;
 }
 .result-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    gap: 15px; /* Increased gap */
+    gap: 15px;
     flex-wrap: wrap;
 }
-.result-header .button-group { /* Wrapper for multiple buttons */
+.result-header .button-group {
     display: flex;
     gap: 10px;
     flex-wrap: nowrap;
 }
+.result-box h3 { margin-bottom: 0; }
 
 pre, #objectsArea .result-box p {
     white-space: pre-wrap;
     word-wrap: break-word;
-    background-color: #f8f9fa; /* Slightly off-white background */
+    background-color: var(--bg-color); /* Use main bg for contrast */
     padding: 15px 20px;
-    border: 1px solid var(--border-color-light);
+    border: 1px solid var(--border-color);
     border-radius: var(--small-border-radius);
     font-size: 1em;
-    line-height: 1.65; /* Improved line height */
+    line-height: 1.65;
     color: var(--text-dark);
     margin-top: 0;
     margin-bottom: 0;
@@ -393,24 +396,26 @@ pre {
      font-family: var(--primary-font);
 }
 
-/* Specific style for correction box - subtle background */
+/* Specific style for correction box */
 #correctionArea.result-box {
-    background-color: #e7f5ff; /* Light blue background */
-    border-color: #b3d7ff;
+    background-color: #fff8e1; /* Pale yellow background */
+    border-color: var(--accent-yellow-dark);
 }
 #correctionArea h3 {
-    color: #0056b3; /* Darker blue header */
+    color: #5f4300; /* Dark yellow/brownish header */
 }
-
+#correctionArea h3 i {
+    color: var(--accent-yellow-dark); /* Yellow icon */
+}
 
 /* --- Error Message Styling --- */
 .error-message {
     background-color: var(--error-bg);
     color: var(--error-text);
     border: 1px solid var(--error-border);
-    padding: 20px 25px; /* More padding */
+    padding: 20px 25px;
     border-radius: var(--base-border-radius);
-    box-shadow: none; /* Rely on card shadow if applied */
+    box-shadow: none;
 }
 .error-message h3 {
     color: var(--error-header);
@@ -424,16 +429,13 @@ pre {
 
 /* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
-    .container {
-        padding: 0 15px; /* Reduce side padding on smaller screens */
-        gap: 20px; /* Reduce gap between cards */
-    }
+    .container { padding: 0 15px; gap: 20px; }
     .card { padding: 25px; }
     .app-header { padding: 20px 25px; font-size: 1.6em; }
     h2 { font-size: 1.3em; }
     h3 { font-size: 1.05em; }
-    .result-header { flex-direction: column; align-items: flex-start; } /* Stack result header content */
-    .result-header .button-group { width: 100%; justify-content: flex-end; } /* Align buttons right */
+    .result-header { flex-direction: column; align-items: flex-start; }
+    .result-header .button-group { width: 100%; justify-content: flex-end; }
 }
 
 @media (max-width: 600px) {
@@ -448,5 +450,5 @@ pre {
     .action-buttons { flex-direction: column; gap: 10px; }
     .action-buttons button { width: 100%; flex-basis: auto; }
     pre, #objectsArea .result-box p { font-size: 0.9em; padding: 12px 15px; }
-    .result-header .button-group { justify-content: flex-start; } /* Align buttons left when stacked */
+    .result-header .button-group { justify-content: flex-start; }
 }
