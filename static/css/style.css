@@ -1,12 +1,11 @@
 /* --- Base Styles & Typography --- */
 body {
-    /* Using Roboto as a clean, modern font */
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #e8e8e8; /* Slightly cooler light gray background */
-    color: #333; /* Darker base text color */
+    background-color: #e8e8e8;
+    color: #333;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -16,61 +15,57 @@ body {
 }
 
 .container {
-    max-width: 800px; /* Slightly wider container */
+    max-width: 800px;
     width: 100%;
-    background: #ffffff; /* Keep container white */
+    background: #ffffff;
     padding: 40px;
-    border-radius: 16px; /* More pronounced rounding */
-    /* More subtle, layered shadow */
+    border-radius: 16px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 10px 30px rgba(0, 0, 0, 0.08);
     margin-top: 40px;
     margin-bottom: 40px;
     box-sizing: border-box;
-    overflow: hidden; /* Clip header background */
+    overflow: hidden;
 }
 
 /* --- Technological Header --- */
 .app-header {
-    /* Dark gradient background */
-    background: linear-gradient(135deg, #2c3e50, #1a252f); /* Dark blue/gray gradient */
-    color: #ecf0f1; /* Light text color */
-    padding: 30px 40px; /* Generous padding */
-    /* Negative margins to break out of container padding and touch edges */
+    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    color: #ecf0f1;
+    padding: 30px 40px;
     margin: -40px -40px 35px -40px;
-    border-radius: 16px 16px 0 0; /* Match container top rounding */
+    border-radius: 16px 16px 0 0;
     text-align: center;
-    border-bottom: 3px solid #FFDA63; /* Accent yellow border bottom */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow below header */
+    border-bottom: 3px solid #FFDA63;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .app-header h1 {
     margin: 0;
-    font-size: 2em; /* Larger header text */
-    font-weight: 500; /* Medium weight */
-    letter-spacing: 1.5px; /* Add spacing */
-    text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Subtle text shadow for depth */
+    font-size: 2em;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
-
 
 /* --- General Headings (h2, h3) --- */
 h2 {
-    color: #2c3e50; /* Match header dark color */
-    border-bottom: 2px solid #f0f0f0; /* Thicker, lighter border */
+    color: #2c3e50;
+    border-bottom: 2px solid #f0f0f0;
     padding-bottom: 0.6em;
     margin-top: 1.8em;
     margin-bottom: 1em;
     font-weight: 500;
+    font-size: 1.5em; /* Consistent h2 size */
 }
-h2 i { margin-right: 8px; opacity: 0.8; } /* Style heading icons */
+h2 i { margin-right: 8px; opacity: 0.8; }
 
 h3 {
-    color: #34495e; /* Slightly lighter blue-gray */
-    font-size: 1.15em; /* Slightly smaller h3 */
-    margin: 0; /* Remove default margin - handled by parent flex */
+    color: #34495e;
+    font-size: 1.15em;
+    margin: 0;
     font-weight: 500;
 }
-h3 i { margin-right: 6px; opacity: 0.8; } /* Style heading icons */
-
+h3 i { margin-right: 6px; opacity: 0.8; }
 
 /* --- Input Options & Buttons --- */
 .input-options {
@@ -78,14 +73,14 @@ h3 i { margin-right: 6px; opacity: 0.8; } /* Style heading icons */
     align-items: center;
     justify-content: center;
     gap: 20px;
-    margin-bottom: 35px; /* More space below */
+    margin-bottom: 35px;
     padding-bottom: 30px;
-    border-bottom: 1px solid #eaeaea; /* Lighter separator */
+    border-bottom: 1px solid #eaeaea;
     flex-wrap: wrap;
 }
 
 .input-options span {
-    color: #7f8c8d; /* Muted gray */
+    color: #7f8c8d;
     font-weight: 500;
     font-size: 0.9em;
     text-transform: uppercase;
@@ -93,39 +88,39 @@ h3 i { margin-right: 6px; opacity: 0.8; } /* Style heading icons */
 
 /* Base button style */
 button, .file-label {
-    padding: 10px 18px; /* Default padding */
-    border: none; /* Remove borders by default */
+    padding: 10px 18px;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 500;
-    transition: all 0.25s ease; /* Smooth transition */
+    transition: all 0.25s ease;
     letter-spacing: 0.5px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    display: inline-flex; /* Align icon and text */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Space between icon and text */
-    vertical-align: middle; /* Align with text like span */
+    gap: 8px;
+    vertical-align: middle;
 }
-button i, .file-label i { /* Don't let icon add pointer events */
+button i, .file-label i {
     pointer-events: none;
     opacity: 0.9;
 }
 
 /* File Upload Label Button */
 .file-label {
-    display: inline-flex; /* Needed for padding/margin */
+    display: inline-flex;
     background-color: #f0f0f0;
-    color: #34495e; /* Match h3 color */
-    border: 1px solid #dcdcdc; /* Subtle border */
-    box-shadow: none; /* Less prominent shadow */
+    color: #34495e;
+    border: 1px solid #dcdcdc;
+    box-shadow: none;
 }
 
 .file-label:hover {
     background-color: #e0e0e0;
     border-color: #c0c0c0;
-    transform: translateY(-1px); /* Slight lift */
+    transform: translateY(-1px);
 }
 
 /* Secondary Button Style */
@@ -144,14 +139,14 @@ button i, .file-label i { /* Don't let icon add pointer events */
 
 /* Tertiary Button Style (Copy/Speak) */
 .tertiary-button {
-    background-color: #e9ecef; /* Light gray */
-    color: #495057; /* Darker gray text */
-    padding: 5px 10px; /* Smaller padding */
-    font-size: 0.85rem; /* Smaller font */
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 5px 10px;
+    font-size: 0.85rem;
     border-radius: 6px;
     box-shadow: none;
     border: 1px solid #ced4da;
-    gap: 5px; /* Less gap for smaller buttons */
+    gap: 5px;
 }
 
 .tertiary-button:hover {
@@ -162,65 +157,63 @@ button i, .file-label i { /* Don't let icon add pointer events */
 
 /* Primary Accent Button (Yellow - Snap) */
 .primary-accent-button {
-    padding: 12px 20px; /* Restore specific padding */
-    background-color: #FFDA63; /* Main yellow */
+    padding: 12px 20px;
+    background-color: #FFDA63;
     color: #333;
 }
 
 .primary-accent-button:hover:not(:disabled) {
-    background-color: #E8C558; /* Darker yellow */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Enhance shadow */
-    transform: translateY(-2px); /* More lift */
+    background-color: #E8C558;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
 }
 
 /* Analyze Button (Primary Action - Green) */
 button#analyzeButton {
-    background-color: #27ae60; /* Emerald green */
+    background-color: #27ae60;
     color: white;
-    font-size: 1.05rem; /* Slightly larger */
+    font-size: 1.05rem;
     font-weight: 600;
-    width: 100%;
-    margin-top: 15px;
-    padding: 14px 25px; /* Restore specific padding */
+    padding: 14px 25px;
 }
 
 button#analyzeButton:hover:not(:disabled) {
-    background-color: #229954; /* Darker green */
+    background-color: #229954;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     transform: translateY(-2px);
 }
 
-button:disabled, button#analyzeButton:disabled {
-    background-color: #bdc3c7; /* Muted gray when disabled */
-    color: #7f8c8d;
+/* Disabled state */
+button:disabled, button#analyzeButton:disabled, #identifyObjectsButton:disabled, #snapButton:disabled {
+    background-color: #bdc3c7 !important; /* Use important to override specifics if needed */
+    color: #7f8c8d !important;
     cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-    opacity: 0.7; /* Make it look faded */
+    box-shadow: none !important;
+    transform: none !important;
+    opacity: 0.7 !important;
+    border-color: #ccc !important; /* Ensure border color also fades */
 }
-/* Ensure label is also visually disabled */
 label.file-label[style*="pointer-events: none"] {
-    background-color: #eee;
-    color: #aaa;
-    cursor: not-allowed;
-    border-color: #e0e0e0;
-    opacity: 0.7;
+    background-color: #eee !important;
+    color: #aaa !important;
+    cursor: not-allowed !important;
+    border-color: #e0e0e0 !important;
+    opacity: 0.7 !important;
 }
-
 
 /* Select Dropdown */
 select#languageSelect {
-    padding: 12px 15px; /* Adjusted padding */
-    border: 1px solid #dcdcdc; /* Consistent border */
+    padding: 12px 15px;
+    border: 1px solid #dcdcdc;
     border-radius: 8px;
     font-size: 1rem;
     background-color: #fff;
     appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); /* Darker arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 10px 10px;
-    padding-right: 40px; /* More space for arrow */
+    padding-right: 40px;
     cursor: pointer;
     width: 100%;
     transition: border-color 0.3s ease;
@@ -237,32 +230,34 @@ select#languageSelect:hover {
     gap: 15px;
     margin-bottom: 30px;
     padding: 25px;
-    border: 1px solid #e0e0e0; /* Solid, lighter border */
-    border-radius: 12px; /* Match container rounding */
-    background-color: #f9f9f9; /* Slightly off-white */
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #f9f9f9;
 }
 
 #videoElement {
     width: 100%;
-    max-width: 550px; /* Slightly larger max video size */
+    max-width: 550px;
     height: auto;
     border-radius: 8px;
     border: 1px solid #ccc;
-    background-color: #333; /* Dark background placeholder */
+    background-color: #333;
 }
 .camera-controls {
     display: flex;
     gap: 15px;
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: center;
 }
 
-/* --- Upload Section (Language/Analyze) --- */
+/* --- Upload Section (Controls & Actions) --- */
 .upload-section {
     margin-bottom: 25px;
     padding-top: 25px;
     border-top: 1px solid #eaeaea;
     display: flex;
     flex-direction: column;
-    gap: 18px; /* Increased gap */
+    gap: 18px;
 }
 
 .upload-section label {
@@ -272,6 +267,19 @@ select#languageSelect:hover {
     font-size: 0.95em;
 }
 
+/* --- Action Buttons Container --- */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.action-buttons button { /* Target buttons inside specifically */
+    flex-grow: 1; /* Allow buttons to grow */
+    flex-basis: 150px; /* Give them a base width before growing */
+}
+
+
 /* --- Loading Indicator --- */
 #loading {
     text-align: center;
@@ -279,15 +287,17 @@ select#languageSelect:hover {
     font-size: 1.1em;
     color: #555;
 }
-
+#loadingText {
+    margin-bottom: 0;
+}
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
-    width: 40px; /* Slightly larger spinner */
+    width: 40px;
     height: 40px;
     border-radius: 50%;
-    border-left-color: #FFDA63; /* Accent yellow */
+    border-left-color: #FFDA63;
     margin: 20px auto;
-    animation: spin 1s linear infinite; /* Linear spin */
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -304,23 +314,23 @@ select#languageSelect:hover {
 
 #imagePreview {
     max-width: 100%;
-    max-height: 500px; /* Larger max height */
+    max-height: 500px;
     margin-top: 15px;
     border: 1px solid #e0e0e0;
-    border-radius: 12px; /* Match container rounding */
+    border-radius: 12px;
     background-color: #fcfcfc;
     padding: 6px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06); /* Subtle shadow on preview */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* --- Results Area --- */
-#resultsArea {
-    margin-top: 35px;
+/* --- Results Area (General) --- */
+#resultsArea, #objectsArea {
+    margin-top: 30px;
 }
 
 .result-box {
-    background-color: #f9f9f9; /* Match camera view background */
-    padding: 20px 25px; /* Adjust padding */
+    background-color: #f9f9f9;
+    padding: 20px 25px;
     border-radius: 12px;
     margin-bottom: 25px;
     border: 1px solid #e5e5e5;
@@ -329,54 +339,61 @@ select#languageSelect:hover {
 
 .result-header {
     display: flex;
-    justify-content: space-between; /* Push title left, buttons right */
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px; /* Space between header and pre */
-    gap: 10px; /* Space between buttons if wrapped */
+    margin-bottom: 15px;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping */
 }
 .result-header div { /* Wrapper for multiple buttons */
     display: flex;
     gap: 10px;
+    flex-wrap: nowrap; /* Prevent buttons themselves from wrapping */
 }
-
 .result-box h3 {
-    /* Styles already defined */
-    margin-bottom: 0; /* Remove margin, handled by parent flex */
+    margin-bottom: 0;
 }
 
-pre {
+pre, #objectsArea .result-box p { /* Apply similar styles to pre and object paragraph */
     white-space: pre-wrap;
     word-wrap: break-word;
-    background-color: #ffffff; /* White background for text */
-    padding: 18px; /* More padding */
+    background-color: #ffffff;
+    padding: 18px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 1em; /* Slightly larger pre text */
+    font-size: 1em;
     line-height: 1.6;
     color: #333;
-    max-height: 280px;
-    overflow-y: auto;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inset shadow */
-    margin-top: 0; /* Ensure no top margin */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    margin-top: 0;
+    margin-bottom: 0; /* Ensure no extra margins */
 }
+pre { /* Monospace font only for pre */
+     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+     max-height: 280px; /* Allow scroll only for pre */
+     overflow-y: auto;
+}
+#objectsArea .result-box p { /* Regular font for object descriptions */
+     font-family: 'Roboto', sans-serif;
+}
+
 
 /* --- Error Message Styling --- */
 .error-message {
-    background-color: #ffebee; /* Lighter red background */
-    color: #c62828; /* Stronger red text */
-    border: 1px solid #ef9a9a; /* Lighter red border */
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
     padding: 18px 25px;
     border-radius: 12px;
     margin-top: 30px;
 }
 .error-message h3 {
-    color: #b71c1c; /* Darkest red */
+    color: #b71c1c;
     margin: 0 0 10px 0;
     font-size: 1.2em;
     font-weight: 500;
 }
-.error-message h3 i { margin-right: 8px; } /* Style icon */
+.error-message h3 i { margin-right: 8px; }
 
 /* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
@@ -387,16 +404,14 @@ pre {
     }
     .app-header {
         padding: 25px 30px;
-        margin: -30px -30px 30px -30px; /* Adjust negative margin */
+        margin: -30px -30px 30px -30px;
         border-radius: 16px 16px 0 0;
     }
      .app-header h1 {
         font-size: 1.7em;
     }
-    .result-header { /* Stack header elements on small screens */
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+    .result-header {
+        /* Keep flex row but allow wrap */
     }
 }
 
@@ -424,8 +439,10 @@ pre {
 
     button, .file-label, select {
         font-size: 0.9rem;
-        padding: 9px 14px; /* Adjust padding */
     }
+     button, .file-label {
+         padding: 9px 14px;
+     }
     .tertiary-button {
          padding: 4px 8px;
          font-size: 0.8rem;
@@ -438,5 +455,14 @@ pre {
         padding-right: 35px;
         background-position: right 12px center;
     }
-    pre { font-size: 0.9em; padding: 15px;}
+    pre, #objectsArea .result-box p { font-size: 0.9em; padding: 15px;}
+
+     .action-buttons {
+        flex-direction: column; /* Stack main action buttons */
+        gap: 10px;
+    }
+     .action-buttons button {
+         width: 100%;
+         flex-basis: auto; /* Reset basis when stacked */
+     }
 }
