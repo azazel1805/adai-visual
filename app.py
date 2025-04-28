@@ -202,5 +202,59 @@ Corrected Text:"""
         print(f"An unexpected error occurred during text correction: {e}"); traceback.print_exc(); return jsonify({"error": "An internal server error occurred during text correction"}), 500
 
 
+@app.route('/estimate_age', methods=['POST'])
+def estimate_age_route():
+    """Estimates the apparent age of people in the image."""
+    if not vision_model:
+        return jsonify({"error": "Gemini Vision API not configured correctly."}), 500
+
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    file = request.files['image']
+    img = None
+    filepath = None
+
+    try:
+        img, filepath = process_uploaded_image(file) # Reuse helper
+        print(f"Estimating age in image: {filepath}")
+
+        # Prompt specifically for apparent age estimation
+        age_prompt = """Analyze the image and estimate the apparent age range of the most prominent person visible. If multiple people are clearly visible, provide estimates for each if possible. If no person is clearly visible or identifiable, please state 'No person detected for age estimation.' Be concise."""
+
+        response = vision_model.generate_content([age_prompt, img], stream=False)
+        response.resolve() # Ensure completion
+
+        estimated_age_text = safe_get_gemini_response(response) # Use safe helper
+        print(f"Age estimation result: {estimated_age_text}")
+
+        return jsonify({
+            "estimated_age": estimated_age_text
+        })
+
+    except (ValueError, IOError) as e: # Catch specific errors from helper
+        print(f"File processing error in /estimate_age: {e}")
+        if 'filepath' in locals() and filepath and not os.path.exists(filepath): filepath = None
+        return jsonify({"error": str(e)}), 400
+    except genai.types.generation_types.BlockedPromptException as e:
+         print(f"Gemini API Error (Blocked Prompt) in /estimate_age: {e}")
+         return jsonify({"error": f"Content blocked by API safety settings."}), 500
+    except Exception as e:
+        print(f"An unexpected error occurred during age estimation: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "An internal server error occurred during age estimation"}), 500
+    finally:
+        # --- Cleanup ---
+        if 'filepath' in locals() and filepath and os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+                print(f"Deleted image after age estimation: {filepath}")
+            except Exception as cleanup_e:
+                print(f"Error cleaning up file {filepath} after age estimation: {cleanup_e}")
+
+
+# --- Main Execution Block ---
 if __name__ == '__main__':
-    app.run(debug=True) # Keep True for local dev, False/Removed for prod via Gunicorn
+    # debug=True is fine for local development
+    # Render/Gunicorn will ignore this block when running in production
+    app.run(debug=True)
