@@ -26,13 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // New Feature Elements
     const copyButtons = document.querySelectorAll('.copy-button');
     const speakButton = document.getElementById('speakButton');
-    const identifyObjectsButton = document.getElementById('identifyObjectsButton'); // New button
-    const objectsArea = document.getElementById('objectsArea');           // New results area
-    const identifiedObjectsText = document.getElementById('identifiedObjectsText'); // New results text element
-    const loadingText = document.getElementById('loadingText');           // Loading text element
-    const analyzeCorrectButton = document.getElementById('analyzeCorrectButton'); // New button
-    const correctionArea = document.getElementById('correctionArea');       // New results area
-    const correctedTextElem = document.getElementById('correctedText');       // New results text element
+    const identifyObjectsButton = document.getElementById('identifyObjectsButton');
+    const objectsArea = document.getElementById('objectsArea');
+    const identifiedObjectsText = document.getElementById('identifiedObjectsText');
+    const loadingText = document.getElementById('loadingText');
+    const analyzeCorrectButton = document.getElementById('analyzeCorrectButton');
+    const correctionArea = document.getElementById('correctionArea');
+    const correctedTextElem = document.getElementById('correctedText');
+    const estimateAgeButton = document.getElementById('estimateAgeButton'); // New button
+    const ageEstimateArea = document.getElementById('ageEstimateArea');   // New area
+    const ageEstimateText = document.getElementById('ageEstimateText');   // New text element
 
     // --- State Variables ---
     let currentFile = null;
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     analyzeButton.addEventListener('click', analyzeImage);
     identifyObjectsButton.addEventListener('click', identifyObjects);
     analyzeCorrectButton.addEventListener('click', analyzeAndCorrectText);
+    estimateAgeButton.addEventListener('click', estimateAge); // Added listener
     copyButtons.forEach(button => button.addEventListener('click', handleCopyClick));
     speakButton.addEventListener('click', handleSpeakClick);
 
@@ -75,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ***** END FIX *****
             cameraArea.style.display = 'none';
             inputOptions.style.display = 'flex';
-            enableActionButtons(true); // Enable Analyze & Identify
+            enableActionButtons(true); // Enable Analyze, Identify & Estimate Age
             speakButton.style.display = 'none';
             analyzeCorrectButton.style.display = 'none';
         }
@@ -83,10 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function startCamera() {
-        hideResultAreas(); // Hide all results including preview
+        hideResultAreas(true); // Hide all results including preview
         errorArea.style.display = 'none';
         currentFile = null;
-        enableActionButtons(false); // Disable Analyze & Identify
+        enableActionButtons(false); // Disable all main actions
         speakButton.style.display = 'none';
         analyzeCorrectButton.style.display = 'none';
 
@@ -125,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
                 imagePreview.src = URL.createObjectURL(currentFile);
                 previewArea.style.display = 'block'; // Makes the container visible
-                enableActionButtons(true); // Enable Analyze & Identify
+                enableActionButtons(true); // Enable all main actions
                 // ***** FIX HERE: Pass false to keep preview visible *****
                 hideResultAreas(false);
                 // ***** END FIX *****
@@ -171,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             extractedTextElem.textContent = result.extracted_text || 'No text content received.';
             translatedTextElem.textContent = result.translated_text || 'No translation received.';
             translationLabelElem.innerHTML = `<i class="fa-solid fa-language"></i> Translated Text (${capitalizeFirstLetter(result.target_language || 'Unknown')}):`;
-            resultsArea.style.display = 'block'; // Show text results section
+            resultsArea.style.display = 'block'; // Show this section
             currentTranslationLanguage = result.target_language;
 
             // Enable Correction Button only if extraction was successful
@@ -182,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             speakButton.style.display = (result.translated_text && result.translated_text !== "No text to translate." && !result.translated_text.startsWith("Error:")) ? 'inline-flex' : 'none';
 
         } catch (error) {
-            console.error("Error during text analysis:", error);
+             console.error("Error during text analysis:", error);
             showError(`Text analysis failed: ${error.message}`);
             currentTranslationLanguage = null;
             updateCorrectionButtonState(false); // Ensure correct button is hidden/disabled
@@ -213,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             correctionArea.style.display = 'none';
             analyzeCorrectButton.style.display = 'none';
             speakButton.style.display = 'none';
+            ageEstimateArea.style.display = 'none'; // Hide age estimate
 
 
         } catch (error) {
@@ -226,28 +231,24 @@ document.addEventListener('DOMContentLoaded', () => {
     async function analyzeAndCorrectText() { // Correct extracted text
         const textToCorrect = extractedTextElem.textContent;
         if (!textToCorrect || textToCorrect === "No text found." || textToCorrect.startsWith("Error:")) {
-            showError("No valid extracted text available to analyze.");
-            return;
+            showError("No valid extracted text available to analyze."); return;
         }
-
         // Disable button immediately to prevent double clicks
         analyzeCorrectButton.disabled = true;
         setLoadingState(true, 'Analyzing for corrections...');
-        correctionArea.style.display = 'none'; // Hide previous corrections
+        // Keep text results visible, hide others
+        hideResultAreas(false, true); // keepPreview=false, keepTextResults=true
 
         try {
-            const response = await fetch('/correct_text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: textToCorrect }),
-            });
+            const response = await fetch('/correct_text', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToCorrect }), });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || `Server error ${response.status}`);
 
             correctedTextElem.textContent = result.corrected_text || 'No correction suggestions provided.';
-            correctionArea.style.display = 'block'; // Show correction area
-            // Ensure main text area is still visible if it was before
-            if(extractedTextElem.textContent) resultsArea.style.display = 'block';
+            // Show correction area only if there's a suggestion or 'no needed' msg
+            correctionArea.style.display = result.corrected_text ? 'block' : 'none';
+             // Ensure text analysis area is still visible
+            resultsArea.style.display = 'block';
 
         } catch (error) {
             console.error("Error during text correction:", error);
@@ -255,11 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
             correctionArea.style.display = 'none'; // Hide on error
         } finally {
             setLoadingState(false); // This will re-enable buttons based on file state
-            // Re-evaluate final state of correction button (might still be valid text)
+            // Re-evaluate final state of correction button
             updateCorrectionButtonState(!!extractedTextElem.textContent && extractedTextElem.textContent !== "No text found." && !extractedTextElem.textContent.startsWith("Error:"));
         }
     }
-    async function estimateAge() {
+
+    async function estimateAge() { // Estimate Age
         if (!currentFile) { showError("Please select or capture an image first."); return; }
 
         const formData = new FormData();
@@ -269,16 +271,18 @@ document.addEventListener('DOMContentLoaded', () => {
         hideResultAreas(false); // Keep preview visible, hide results
 
         try {
-            const response = await fetch('/estimate_age', { // Call the NEW endpoint
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetch('/estimate_age', { method: 'POST', body: formData });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || `Server error ${response.status}`);
 
-            // Display the age estimate
             ageEstimateText.textContent = result.estimated_age || 'Could not estimate age.';
             ageEstimateArea.style.display = 'block'; // Show age estimate area
+             // Ensure other results remain hidden
+            resultsArea.style.display = 'none';
+            correctionArea.style.display = 'none';
+            objectsArea.style.display = 'none';
+            analyzeCorrectButton.style.display = 'none';
+            speakButton.style.display = 'none';
 
         } catch (error) {
             console.error("Error during age estimation:", error);
@@ -295,16 +299,15 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingElem.style.display = isLoading ? 'block' : 'none';
 
         // Disable all interactive elements during loading
-        const elementsToDisable = [analyzeButton, identifyObjectsButton, analyzeCorrectButton, startCameraButton, imageInput, fileLabel, languageSelect];
+        const elementsToDisable = [analyzeButton, identifyObjectsButton, estimateAgeButton, analyzeCorrectButton, startCameraButton, imageInput, fileLabel, languageSelect, snapButton, cancelCameraButton];
         elementsToDisable.forEach(el => { if(el) el.disabled = isLoading; });
         if (fileLabel) fileLabel.style.pointerEvents = isLoading ? 'none' : 'auto';
 
         // Hide buttons that depend on results during loading
         speakButton.style.display = 'none';
         if(isLoading) {
-            analyzeCorrectButton.style.display = 'none';
+            analyzeCorrectButton.style.display = 'none'; // Ensure hidden while loading
             errorArea.style.display = 'none'; // Hide error when loading starts
-             // Don't hide preview here, handled by calling functions
         }
 
         if (!isLoading) {
@@ -312,12 +315,14 @@ document.addEventListener('DOMContentLoaded', () => {
             enableActionButtons(!!currentFile);
              // Re-evaluate correction button state after loading finishes
             updateCorrectionButtonState(!!extractedTextElem.textContent && extractedTextElem.textContent !== "No text found." && !extractedTextElem.textContent.startsWith("Error:"));
+             // Re-enable camera buttons if camera is active? No, handled by stop/start
         }
     }
 
-    function enableActionButtons(enabled) { // Enables Identify and Analyze/Translate
+    function enableActionButtons(enabled) { // Enables Analyze, Identify & Estimate Age
         analyzeButton.disabled = !enabled;
         identifyObjectsButton.disabled = !enabled;
+        estimateAgeButton.disabled = !enabled;
     }
 
     function updateCorrectionButtonState(enabled) {
@@ -326,15 +331,20 @@ document.addEventListener('DOMContentLoaded', () => {
         analyzeCorrectButton.style.display = enabled ? 'inline-flex' : 'none';
     }
 
-    function hideResultAreas(hidePreview = true) {
-         // Hides all result sections, conditionally hiding preview
+    function hideResultAreas(hidePreview = true, keepTextResults = false) {
+         // Hides all result sections, conditionally hiding preview or keeping text results
          if(hidePreview) previewArea.style.display = 'none';
-         resultsArea.style.display = 'none';
-         objectsArea.style.display = 'none';
-         correctionArea.style.display = 'none';
-         // Also hide buttons related to these areas
-         speakButton.style.display = 'none';
-         analyzeCorrectButton.style.display = 'none';
+         if(!keepTextResults) resultsArea.style.display = 'none'; // Hide Text analysis
+         objectsArea.style.display = 'none';      // Hide Objects
+         correctionArea.style.display = 'none';   // Hide Correction
+         ageEstimateArea.style.display = 'none';  // Hide Age estimate
+
+         // Also hide buttons related to these areas if the main area is hidden
+         if (!keepTextResults) {
+            speakButton.style.display = 'none';
+            // Correction button state depends on extracted text, handled by updateCorrectionButtonState
+            // analyzeCorrectButton.style.display = 'none';
+         }
     }
 
     // --- Feature Handlers ---
@@ -390,13 +400,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function showError(message) {
         errorMessageElem.textContent = message;
         errorArea.style.display = 'block'; // Show error card
-        // Hide results/objects/corrections, but keep preview if visible
+        // Hide results/objects/corrections/age, but keep preview if shown
         hideResultAreas(false);
-        // Ensure loading indicator is off and buttons reset correctly
-        setLoadingState(false);
+        setLoadingState(false); // Ensure loading indicator is off and buttons reset correctly
         // Specifically hide speak/correct buttons on error
         speakButton.style.display = 'none';
-        analyzeCorrectButton.style.display = 'none';
+        updateCorrectionButtonState(false); // Use helper to hide/disable
     }
 
     function resetState() {
@@ -413,7 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
         translatedTextElem.textContent = '';
         identifiedObjectsText.textContent = '';
         correctedTextElem.textContent = '';
-        loadingText.textContent = 'Processing...';
+        ageEstimateText.textContent = ''; // Clear age text
+        loadingText.textContent = 'Processing...'; // Reset loading text
         currentTranslationLanguage = null;
         enableActionButtons(false); // Disable main actions
         updateCorrectionButtonState(false); // Ensure correction button is hidden/disabled
